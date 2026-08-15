@@ -1,0 +1,140 @@
+/* Salesforce CRM - Responsive Styles */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .header-right {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .contacts-toolbar {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 15px;
+  }
+
+  .sort-section {
+    align-items: flex-start !important;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .page-info {
+    order: -1;
+  }
+
+  .main {
+    padding: 20px 12px !important;
+  }
+
+  .section-card {
+    padding: 18px !important;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+/* ==================================================
+   Responsive Design
+   ================================================== */
+
+@media (max-width: 768px) {
+  .responsiveStatsGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .responsiveFormGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .responsiveContactsToolbar {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 15px;
+  }
+
+  .responsivePagination {
+    flex-direction: column !important;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsiveStatsGrid {
+    gap: 12px;
+  }
+
+  .responsiveFormGrid {
+    gap: 12px;
+  }
+
+  .responsiveContactsToolbar {
+    align-items: stretch !important;
+  }
+
+  .responsiveContactsToolbar button {
+    width: 100%;
+  }
+
+  .responsivePagination {
+    align-items: stretch !important;
+  }
+
+  .responsivePagination button {
+    width: 100%;
+  }
+}
+input,
+select {
+  background-color: #ffffff;
+  color: #181818;
+}
+
+input::placeholder {
+  color: #68737d;
+  opacity: 1;
+}
+
+input:focus,
+select:focus {
+  background-color: #ffffff;
+  color: #181818;
+}
