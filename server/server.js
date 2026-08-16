@@ -14,7 +14,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://salesforce-crud-frontend-6ypo.onrender.com",
     credentials: true,
   }),
 );
@@ -26,8 +26,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     },
   }),
 );
@@ -149,7 +149,7 @@ app.get("/auth/callback", async (req, res) => {
     delete req.session.codeVerifier;
     delete req.session.oauthState;
 
-    res.redirect("http://localhost:5173/");
+    res.redirect("https://salesforce-crud-frontend-6ypo.onrender.com/");
   } catch (error) {
     console.error(
       "Salesforce OAuth Error:",
@@ -206,6 +206,23 @@ function requireSalesforceLogin(req, res, next) {
   }
 
   next();
+}
+
+function handleSalesforceError(error, res, message) {
+  console.error(`${message}:`, error.response?.data || error.message);
+
+  const status = error.response?.status || 500;
+
+  if (status === 401) {
+    return res.status(401).json({
+      error: "Salesforce session expired. Please login again.",
+    });
+  }
+
+  return res.status(status).json({
+    error: message,
+    details: error.response?.data || error.message,
+  });
 }
 
 // --------------------------------------------------
