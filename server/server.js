@@ -201,11 +201,13 @@ app.get("/auth/status", (req, res) => {
   if (req.session.salesforce) {
     return res.json({
       authenticated: true,
+      salesforce: true,
     });
   }
 
   return res.json({
     authenticated: false,
+    salesforce: false,
   });
 });
 
