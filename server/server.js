@@ -187,11 +187,19 @@ app.get("/auth/callback", async (req, res) => {
 // --------------------------------------------------
 
 app.get("/auth/status", (req, res) => {
+  console.log("========== AUTH STATUS ==========");
+  console.log("STATUS SESSION ID:", req.sessionID);
+  console.log("STATUS HAS SALESFORCE SESSION:", !!req.session.salesforce);
+
   if (req.session.salesforce) {
+    console.log("STATUS: AUTHENTICATED");
+
     return res.json({
       authenticated: true,
     });
   }
+
+  console.log("STATUS: NOT AUTHENTICATED");
 
   res.json({
     authenticated: false,
