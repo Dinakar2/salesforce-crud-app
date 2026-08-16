@@ -1,156 +1,141 @@
-\# Salesforce CRUD Application
+# Salesforce CRUD Application
 
+A full-stack Salesforce CRM web application that allows users to manage Salesforce records through a web-based interface without using the native Salesforce interface.
 
+The application uses React for the frontend, Node.js/Express for the backend, and Salesforce OAuth 2.0 and REST APIs for authentication and CRM operations.
 
-A full-stack Salesforce CRM application that allows users to manage Salesforce records through a web-based interface.
+## Live Application
 
+https://salesforce-crud-app-17yw.onrender.com
 
+## Project Overview
 
-\## Project Overview
+This project provides a user-friendly web interface for managing Salesforce CRM records.
 
+Users can authenticate with Salesforce using OAuth 2.0 and perform standard CRUD (Create, Read, Update, Delete) operations on the following Salesforce standard objects:
 
+- Account
+- Opportunity
+- Lead
+- Contact
+- Case
 
-This project provides a user-friendly interface for managing Salesforce CRM objects. It connects a React frontend with a Node.js/Express backend and Salesforce APIs to perform CRUD operations.
+A central object dropdown allows users to select the Salesforce object they want to manage. The application dynamically displays the relevant fields and records for the selected object.
 
+## Features
 
+- Salesforce OAuth 2.0 authentication
+- Salesforce connection status
+- Central Salesforce object selection dropdown
+- Support for five Salesforce standard objects:
+  - Account
+  - Opportunity
+  - Lead
+  - Contact
+  - Case
+- Dynamic object-specific fields
+- View Salesforce records
+- Search records
+- Create new records
+- Update existing records
+- Delete records
+- Pagination with 20 records loaded at a time
+- Infinite scrolling to load additional records
+- Responsive web interface
+- Salesforce REST API integration
+- Server-side Salesforce session/token handling
 
-The application supports the following Salesforce objects:
+## Salesforce Objects
 
+### Account
 
+Supported fields include:
 
-\- Accounts
+- Name
+- Phone
+- Website
+- Industry
+- Type
 
-\- Opportunities
+### Opportunity
 
-\- Leads
+Supported fields include:
 
-\- Cases
+- Name
+- Amount
+- StageName
+- CloseDate
+- Type
 
+### Lead
 
+Supported fields include:
 
-\## Features
+- FirstName
+- LastName
+- Company
+- Email
+- Phone
+- Status
 
+### Contact
 
+Supported fields include:
 
-\- Salesforce authentication and connection
+- FirstName
+- LastName
+- Email
+- Phone
+- Title
 
-\- View Salesforce records
+### Case
 
-\- Search Salesforce records
+Supported fields include:
 
-\- Create new records
+- CaseNumber
+- Subject
+- Status
+- Priority
+- Origin
 
-\- Update existing records
+## CRUD Operations
 
-\- Delete records
+The application supports the following operations:
 
-\- Manage multiple Salesforce objects
+### Create
 
-\- Account management
+Users can create new Salesforce records directly from the web application.
 
-\- Opportunity management
+### Read
 
-\- Lead management
+Users can view Salesforce records and search available records.
 
-\- Case management
+### Update
 
-\- Connection status display
+Users can edit existing Salesforce records.
 
-\- Responsive web interface
+### Delete
 
+Users can delete Salesforce records directly through the application.
 
+## Pagination and Infinite Scroll
 
-\## Tech Stack
+The application loads records in batches of 20.
 
+When the user reaches the end of the currently displayed records, the application requests the next set of records from the backend.
 
-
-\### Frontend
-
-\- React.js
-
-\- JavaScript
-
-\- HTML5
-
-\- CSS3
-
-\- Vite
-
-
-
-\### Backend
-
-\- Node.js
-
-\- Express.js
-
-\- JavaScript
-
-
-
-\### CRM / API
-
-\- Salesforce REST API
-
-\- Salesforce OAuth authentication
-
-
-
-\### Development Tools
-
-\- Visual Studio Code
-
-\- Git
-
-\- GitHub
-
-\- npm
-
-
-
-\## Project Structure
-
-
+Example:
 
 ```text
-
-salesforce-crud-app/
-
-│
-
-├── client/
-
-│   ├── public/
-
-│   ├── src/
-
-│   │   ├── assets/
-
-│   │   ├── App.jsx
-
-│   │   ├── App.css
-
-│   │   ├── index.css
-
-│   │   └── main.jsx
-
-│   ├── package.json
-
-│   └── vite.config.js
-
-│
-
-├── server/
-
-│   ├── server.js
-
-│   ├── package.json
-
-│   └── .env
-
-│
-
-├── .gitignore
-
-└── README.md
-
+Records 1 - 20
+       ↓
+Scroll to bottom
+       ↓
+Records 21 - 40
+       ↓
+Scroll to bottom
+       ↓
+Records 41 - 60
+       ↓
+Continue....
+```
