@@ -1,11 +1,26 @@
 const express = require("express");
-const cors = require("cors");
 const dotenv = require("dotenv");
 const axios = require("axios");
 const session = require("express-session");
 const crypto = require("crypto");
+const path = require("path");
 
 dotenv.config();
+
+const requiredEnv = [
+  "SF_CLIENT_ID",
+  "SF_CLIENT_SECRET",
+  "SF_CALLBACK_URL",
+  "SF_LOGIN_URL",
+  "SESSION_SECRET",
+];
+
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    console.error(`Missing required environment variable: ${key}`);
+    process.exit(1);
+  }
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,21 +30,16 @@ app.set("trust proxy", 1);
 app.use(express.json());
 
 app.use(
-  cors({
-    origin: "https://salesforce-crud-frontend-6ypo.onrender.com",
-    credentials: true,
-  }),
-);
-app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     proxy: true,
+
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
   }),
@@ -55,12 +65,6 @@ function generateCodeChallenge(verifier) {
 // Home Route
 // --------------------------------------------------
 
-app.get("/", (req, res) => {
-  res.json({
-    message: "Salesforce CRUD Backend is running",
-  });
-});
-
 // --------------------------------------------------
 // Salesforce Login
 // --------------------------------------------------
@@ -74,8 +78,10 @@ app.get("/auth/login", (req, res) => {
   req.session.codeVerifier = codeVerifier;
   req.session.oauthState = state;
 
-  console.log("LOGIN SESSION ID:", req.sessionID);
-  console.log("LOGIN OAUTH STATE:", state);
+  console.log(
+    "CALLBACK URL BEING SENT:",
+    JSON.stringify(process.env.SF_CALLBACK_URL),
+  );
 
   const params = new URLSearchParams({
     response_type: "code",
@@ -100,10 +106,6 @@ app.get("/auth/login", (req, res) => {
 app.get("/auth/callback", async (req, res) => {
   try {
     const { code, error, error_description, state } = req.query;
-
-    console.log("CALLBACK SESSION ID:", req.sessionID);
-    console.log("CALLBACK OAUTH STATE:", state);
-    console.log("SAVED OAUTH STATE:", req.session.oauthState);
 
     if (error) {
       return res.status(400).json({
@@ -159,9 +161,6 @@ app.get("/auth/callback", async (req, res) => {
     delete req.session.codeVerifier;
     delete req.session.oauthState;
 
-    console.log("SESSION BEFORE SAVE:", req.session);
-    console.log("SESSION ID BEFORE SAVE:", req.sessionID);
-
     req.session.save((err) => {
       if (err) {
         console.error("SESSION SAVE ERROR:", err);
@@ -171,9 +170,8 @@ app.get("/auth/callback", async (req, res) => {
       }
 
       console.log("SESSION SAVED SUCCESSFULLY");
-      console.log("SESSION ID BEFORE REDIRECT:", req.sessionID);
 
-      res.redirect("https://salesforce-crud-frontend-6ypo.onrender.com/");
+      res.redirect("/");
     });
   } catch (error) {
     console.error(
@@ -193,10 +191,6 @@ app.get("/auth/callback", async (req, res) => {
 // --------------------------------------------------
 app.get("/auth/status", (req, res) => {
   console.log("========== AUTH STATUS ==========");
-  console.log("SESSION ID:", req.sessionID);
-  console.log("SESSION:", req.session);
-  console.log("SALESFORCE SESSION:", req.session.salesforce);
-  console.log("COOKIE:", req.headers.cookie);
 
   if (req.session.salesforce) {
     return res.json({
@@ -715,8 +709,6 @@ app.post("/api/:object", requireSalesforceLogin, async (req, res) => {
     const { accessToken, instanceUrl } = req.session.salesforce;
 
     const payload = buildSalesforcePayload(salesforceObject, req.body);
-    console.log("Request body:", req.body);
-    console.log("Salesforce payload:", payload);
 
     // Required field validation
     if (!payload[config.requiredField]) {
@@ -870,10 +862,30 @@ app.delete("/api/:object/:id", requireSalesforceLogin, async (req, res) => {
     });
   }
 });
+
+// --------------------------------------------------
+// Serve React Frontend
+// --------------------------------------------------
+
+const clientPath = path.join(__dirname, "client", "dist");
+
+app.use(express.static(clientPath));
+
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/") || req.path.startsWith("/auth/")) {
+    return next();
+  }
+
+  res.sendFile(path.join(clientPath, "index.html"));
+});
+
 // --------------------------------------------------
 // Start Server
 // --------------------------------------------------
 
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+// --------------------------------------------------
+// Start Server
+// --------------------------------------------------

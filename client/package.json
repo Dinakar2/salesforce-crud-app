@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "salesforce-crud-app": "file:.."
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 
-const API_URL = "https://salesforce-crud-app-l7yw.onrender.com";
+const API_URL = "";
 
 
 const OBJECT_CONFIG = {
@@ -238,9 +238,9 @@ useEffect(() => {
 }, [selectedObject, authenticated]);
   const checkLoginStatus = async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/status`, {
-        credentials: "include",
-      });
+      const response = await fetch("/auth/status", {
+  credentials: "include",
+});
 
       const data = await response.json();
 
