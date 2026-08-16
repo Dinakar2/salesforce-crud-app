@@ -20,12 +20,12 @@ app.use(
     credentials: true,
   }),
 );
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
       secure: true,
@@ -73,6 +73,9 @@ app.get("/auth/login", (req, res) => {
   req.session.codeVerifier = codeVerifier;
   req.session.oauthState = state;
 
+  console.log("LOGIN SESSION ID:", req.sessionID);
+  console.log("LOGIN OAUTH STATE:", state);
+
   const params = new URLSearchParams({
     response_type: "code",
     client_id: process.env.SF_CLIENT_ID,
@@ -96,6 +99,10 @@ app.get("/auth/login", (req, res) => {
 app.get("/auth/callback", async (req, res) => {
   try {
     const { code, error, error_description, state } = req.query;
+
+    console.log("CALLBACK SESSION ID:", req.sessionID);
+    console.log("CALLBACK OAUTH STATE:", state);
+    console.log("SAVED OAUTH STATE:", req.session.oauthState);
 
     if (error) {
       return res.status(400).json({
@@ -151,7 +158,16 @@ app.get("/auth/callback", async (req, res) => {
     delete req.session.codeVerifier;
     delete req.session.oauthState;
 
-    res.redirect("https://salesforce-crud-frontend-6ypo.onrender.com/");
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+        return res.status(500).json({
+          error: "Failed to save session",
+        });
+      }
+
+      res.redirect("https://salesforce-crud-frontend-6ypo.onrender.com/");
+    });
   } catch (error) {
     console.error(
       "Salesforce OAuth Error:",
