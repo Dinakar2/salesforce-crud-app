@@ -164,11 +164,14 @@ app.get("/auth/callback", async (req, res) => {
 
     req.session.save((err) => {
       if (err) {
-        console.error("Session save error:", err);
+        console.error("SESSION SAVE ERROR:", err);
         return res.status(500).json({
           error: "Failed to save session",
         });
       }
+
+      console.log("SESSION SAVED SUCCESSFULLY");
+      console.log("SESSION ID BEFORE REDIRECT:", req.sessionID);
 
       res.redirect("https://salesforce-crud-frontend-6ypo.onrender.com/");
     });
