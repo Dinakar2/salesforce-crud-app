@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "https://salesforce-crud-app-l7yw.onrender.com";
 
 
 const OBJECT_CONFIG = {
@@ -268,6 +268,14 @@ useEffect(() => {
     }, 4000);
   };
 
+ const handleUnauthorized = () => {
+  setAuthenticated(false);
+  clearForm();
+  setRecords([]);
+  setViewingContact(null);
+  setEditingId(null);
+};
+
   // --------------------------------------------------
   // Login
   // --------------------------------------------------
@@ -301,23 +309,40 @@ useEffect(() => {
     setRecordsLoading(true);
   }
 
+
   try {
     const endpoint = OBJECT_ENDPOINTS[objectName];
 
     const response = await fetch(
-      `${API_URL}/api/${endpoint}?page=${page}`,
-      {
-        credentials: "include",
-      }
-    );
+  `${API_URL}/api/${endpoint}?page=${page}`,
+  {
+    credentials: "include",
+  }
+);
 
-    const data = await response.json();
+if (response.status === 401) {
+  handleUnauthorized();
+  return;
+}
 
-    if (!response.ok) {
-      throw new Error(
-        data.error || `Failed to load ${objectName} records`
-      );
-    }
+const data = await response.json();
+
+if (response.status === 401) {
+  setAuthenticated(false);
+  clearForm();
+  setRecords([]);
+  showMessage(
+    "Your Salesforce session has expired. Please login again.",
+    "error"
+  );
+  return;
+}
+
+if (!response.ok) {
+  throw new Error(
+    data.error || `Failed to load ${objectName} records`
+  );
+}
 
     if (append) {
       setRecords((previousRecords) => [
@@ -504,6 +529,18 @@ useEffect(() => {
     });
 
     const data = await response.json();
+
+    if (response.status === 401) {
+  setAuthenticated(false);
+  clearForm();
+  setRecords([]);
+  showMessage(
+    "Your Salesforce session has expired. Please login again.",
+    "error"
+  );
+  return;
+}
+
 if (!response.ok) {
   throw new Error(
     data.error ||
@@ -593,6 +630,16 @@ const deleteRecord = async (id) => {
     );
 
     const data = await response.json();
+     if (response.status === 401) {
+  setAuthenticated(false);
+  clearForm();
+  setRecords([]);
+  showMessage(
+    "Your Salesforce session has expired. Please login again.",
+    "error"
+  );
+  return;
+}
 
     if (!response.ok) {
       throw new Error(
@@ -1329,10 +1376,14 @@ const styles = {
     fontWeight: "bold",
   },
 
-  loginTitle: {
-    color: "#032d60",
-    marginBottom: "12px",
-  },
+ loginTitle: {
+  color: "#032d60",
+  margin: "0 0 12px 0",
+  fontSize: "32px",
+  lineHeight: "1.25",
+  fontWeight: "700",
+  textAlign: "center",
+},
 
   loginText: {
     color: "#5f6b7a",
