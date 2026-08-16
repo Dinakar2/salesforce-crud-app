@@ -159,6 +159,9 @@ app.get("/auth/callback", async (req, res) => {
     delete req.session.codeVerifier;
     delete req.session.oauthState;
 
+    console.log("SESSION BEFORE SAVE:", req.session);
+    console.log("SESSION ID BEFORE SAVE:", req.sessionID);
+
     req.session.save((err) => {
       if (err) {
         console.error("Session save error:", err);
@@ -185,23 +188,20 @@ app.get("/auth/callback", async (req, res) => {
 // --------------------------------------------------
 // Check Login Status
 // --------------------------------------------------
-
 app.get("/auth/status", (req, res) => {
   console.log("========== AUTH STATUS ==========");
-  console.log("STATUS SESSION ID:", req.sessionID);
-  console.log("STATUS HAS SALESFORCE SESSION:", !!req.session.salesforce);
+  console.log("SESSION ID:", req.sessionID);
+  console.log("SESSION:", req.session);
+  console.log("SALESFORCE SESSION:", req.session.salesforce);
+  console.log("COOKIE:", req.headers.cookie);
 
   if (req.session.salesforce) {
-    console.log("STATUS: AUTHENTICATED");
-
     return res.json({
       authenticated: true,
     });
   }
 
-  console.log("STATUS: NOT AUTHENTICATED");
-
-  res.json({
+  return res.json({
     authenticated: false,
   });
 });
